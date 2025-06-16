@@ -1,0 +1,109 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "ES2020",
+    "outDir": "out",
+    "lib": ["ES2020"],
+    "sourceMap": true,
+    "rootDir": "src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "exclude": ["node_modules", ".vscode-test"]
+}
+
+// .eslintrc.json
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "plugins": ["@typescript-eslint"],
+  "rules": {
+    "@typescript-eslint/naming-convention": [
+      "warn",
+      {
+        "selector": "import",
+        "format": ["camelCase", "PascalCase"]
+      }
+    ],
+    "@typescript-eslint/semi": "warn",
+    "curly": "warn",
+    "eqeqeq": "warn",
+    "no-throw-literal": "warn",
+    "semi": "off"
+  },
+  "ignorePatterns": ["out", "dist", "**/*.d.ts"]
+}
+
+// .vscodeignore
+.vscode/**
+.vscode-test/**
+out/test/**
+src/**
+.gitignore
+.yarnrc
+vsc-extension-quickstart.md
+**/tsconfig.json
+**/.eslintrc.json
+**/*.map
+**/*.ts
+**/node_modules/**
+**/.DS_Store
+
+// README.md example
+# GitHub Copilot MCP BitBucket Plugin
+
+This VS Code extension integrates GitHub Copilot with your BitBucket repositories through a Spring AI-based MCP (Model Context Protocol) server.
+
+## Features
+
+- 🔄 Connect to BitBucket repositories via MCP server
+- 🤖 Enhanced GitHub Copilot chat with repository context
+- 🔍 Intelligent code search and suggestions
+- 📁 Repository structure analysis
+- 💡 Context-aware code generation
+
+## Setup
+
+1. **Install the extension** from the VS Code marketplace
+2. **Configure your MCP server** in VS Code settings:
+   - `copilotMCP.serverUrl`: Your Spring AI MCP server URL
+   - `copilotMCP.bitbucketWorkspace`: BitBucket workspace name
+   - `copilotMCP.bitbucketRepo`: Repository name
+   - `copilotMCP.accessToken`: Authentication token (if required)
+
+3. **Start using** the `@bitbucket-mcp` chat participant in GitHub Copilot
+
+## Usage
+
+In GitHub Copilot Chat, use the `@bitbucket-mcp` participant:
+
+- `@bitbucket-mcp Show me the repository structure`
+- `@bitbucket-mcp Find similar patterns to this code`
+- `@bitbucket-mcp Help me implement a new feature based on existing code`
+
+## Requirements
+
+- VS Code 1.85.0 or higher
+- GitHub Copilot extension
+- Running Spring AI MCP server with BitBucket integration
+
+## Development
+
+```bash
+npm install
+npm run compile
+npm run watch  # for development
+npm run package  # to create .vsix file
+```
+
+## License
+
+MIT

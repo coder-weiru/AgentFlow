@@ -1,0 +1,208 @@
+graph TB
+    subgraph "MCP Host Layer"
+        subgraph "GitHub Copilot Host"
+            subgraph "CopilotChatManager"
+                CCM_API[IChatParticipant]
+                CCM_REQ[RequestHandler]
+                CCM_CTX[ContextManager]
+                CCM_STREAM[StreamHandler]
+            end
+            
+            subgraph "LanguageModel"
+                LM_API[ILanguageModel]
+                LM_PROMPT[PromptProcessor]
+                LM_RESP[ResponseGenerator]
+            end
+            
+            subgraph "VSCodeIntegration"
+                VSC_ED[ITextEditor]
+                VSC_CFG[IConfiguration]
+                VSC_UI[IUserInterface]
+                VSC_CMD[ICommandManager]
+            end
+        end
+    end
+    
+    subgraph "MCP Client Layer"
+        subgraph "MCPClientPlugin"
+            subgraph "CopilotMCPChatParticipant"
+                CMCP_HANDLER[handleChatRequest]
+                CMCP_INIT[initialize]
+                CMCP_CONTEXT[buildContext]
+            end
+            
+            subgraph "BitBucketCodeProvider"
+                BCP_SEARCH[getRelevantCode]
+                BCP_STRUCT[getFileStructure]
+                BCP_CONTEXT[buildCodeContext]
+            end
+            
+            subgraph "MCPClient"
+                MC_PROTO[MCPProtocolHandler]
+                MC_REQ[sendRequest]
+                MC_RESP[handleResponse]
+                MC_AUTH[AuthenticationManager]
+            end
+        end
+        
+        subgraph "MCPProtocolManager"
+            PROTO_JSONRPC[JSON-RPC Handler]
+            PROTO_SERIAL[MessageSerializer]
+            PROTO_VALID[MessageValidator]
+            PROTO_CONN[ConnectionManager]
+        end
+    end
+    
+    subgraph "MCP Server Layer"
+        subgraph "SpringAIMCPServer"
+            subgraph "MCPController"
+                CTRL_INIT[initializeHandler]
+                CTRL_TOOLS[toolsHandler]
+                CTRL_RES[resourcesHandler]
+                CTRL_NOTIF[notificationHandler]
+            end
+            
+            subgraph "MCPResourceService"
+                RES_LIST[listResources]
+                RES_READ[readResource]
+                RES_WATCH[watchResource]
+                RES_CACHE[ResourceCache]
+            end
+            
+            subgraph "MCPToolService"
+                TOOL_EXEC[executeTool]
+                TOOL_LIST[listTools]
+                TOOL_VALIDATE[validateTool]
+            end
+            
+            subgraph "AIEnhancementService"
+                AI_EMBED[generateEmbeddings]
+                AI_SEARCH[vectorSearch]
+                AI_CONTEXT[buildAIContext]
+                AI_ANALYZE[analyzeCode]
+            end
+        end
+        
+        subgraph "BitBucketIntegration"
+            subgraph "BitBucketAPIService"
+                BB_CLIENT[BitBucketClient]
+                BB_AUTH[OAuthManager]
+                BB_RATE[RateLimitManager]
+            end
+            
+            subgraph "RepositoryService"
+                REPO_FETCH[fetchRepository]
+                REPO_SEARCH[searchCode]
+                REPO_FILES[getFileContent]
+                REPO_META[getMetadata]
+            end
+            
+            subgraph "CodeAnalysisService"
+                CODE_PARSE[parseCode]
+                CODE_INDEX[indexCode]
+                CODE_SIMILARITY[findSimilarity]
+            end
+        end
+    end
+    
+    subgraph "Data Access Layer"
+        subgraph "LocalDataManager"
+            subgraph "CacheRepository"
+                CACHE_REDIS[RedisCache]
+                CACHE_MEM[InMemoryCache]
+                CACHE_FILE[FileCache]
+            end
+            
+            subgraph "IndexRepository"
+                INDEX_LUCENE[LuceneIndex]
+                INDEX_ELASTIC[ElasticSearch]
+                INDEX_VECTOR[VectorIndex]
+            end
+            
+            subgraph "ConfigRepository"
+                CFG_PROPS[PropertiesConfig]
+                CFG_YAML[YAMLConfig]
+                CFG_ENV[EnvironmentConfig]
+            end
+        end
+        
+        subgraph "ExternalServiceManager"
+            subgraph "BitBucketAPIClient"
+                BB_REST[RESTClient]
+                BB_WEBHOOK[WebhookHandler]
+                BB_OAUTH[OAuthClient]
+            end
+            
+            subgraph "AIServiceClient"
+                AI_OPENAI[OpenAIClient]
+                AI_AZURE[AzureAIClient]
+                AI_LOCAL[LocalAIClient]
+            end
+        end
+    end
+    
+    %% Interface Dependencies
+    CCM_API -.-> CMCP_HANDLER
+    CMCP_HANDLER --> BCP_SEARCH
+    CMCP_HANDLER --> MC_REQ
+    BCP_SEARCH --> MC_PROTO
+    MC_PROTO --> PROTO_JSONRPC
+    
+    %% Protocol Communication
+    PROTO_JSONRPC <--> CTRL_INIT
+    PROTO_JSONRPC <--> CTRL_TOOLS
+    PROTO_JSONRPC <--> CTRL_RES
+    
+    %% Server Internal Dependencies
+    CTRL_RES --> RES_LIST
+    CTRL_TOOLS --> TOOL_EXEC
+    RES_LIST --> AI_EMBED
+    TOOL_EXEC --> BB_CLIENT
+    
+    %% AI Enhancement Flow
+    AI_EMBED --> INDEX_VECTOR
+    AI_SEARCH --> INDEX_LUCENE
+    AI_CONTEXT --> CODE_SIMILARITY
+    
+    %% Data Access
+    RES_CACHE --> CACHE_REDIS
+    CODE_INDEX --> INDEX_ELASTIC
+    BB_AUTH --> CFG_PROPS
+    
+    %% External Service Integration
+    BB_CLIENT --> BB_REST
+    AI_ANALYZE --> AI_OPENAI
+    REPO_FETCH --> BB_WEBHOOK
+    
+    %% Component Styling
+    classDef hostComponent fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef clientComponent fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef serverComponent fill:#e8f5e8,stroke:#388e3c,stroke-width:2px
+    classDef dataComponent fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    
+    %% Apply styles to host components
+    class CCM_API,CCM_REQ,CCM_CTX,CCM_STREAM hostComponent
+    class LM_API,LM_PROMPT,LM_RESP hostComponent
+    class VSC_ED,VSC_CFG,VSC_UI,VSC_CMD hostComponent
+    
+    %% Apply styles to client components
+    class CMCP_HANDLER,CMCP_INIT,CMCP_CONTEXT clientComponent
+    class BCP_SEARCH,BCP_STRUCT,BCP_CONTEXT clientComponent
+    class MC_PROTO,MC_REQ,MC_RESP,MC_AUTH clientComponent
+    class PROTO_JSONRPC,PROTO_SERIAL,PROTO_VALID,PROTO_CONN clientComponent
+    
+    %% Apply styles to server components
+    class CTRL_INIT,CTRL_TOOLS,CTRL_RES,CTRL_NOTIF serverComponent
+    class RES_LIST,RES_READ,RES_WATCH,RES_CACHE serverComponent
+    class TOOL_EXEC,TOOL_LIST,TOOL_VALIDATE serverComponent
+    class AI_EMBED,AI_SEARCH,AI_CONTEXT,AI_ANALYZE serverComponent
+    class BB_CLIENT,BB_AUTH,BB_RATE serverComponent
+    class REPO_FETCH,REPO_SEARCH,REPO_FILES,REPO_META serverComponent
+    class CODE_PARSE,CODE_INDEX,CODE_SIMILARITY serverComponent
+    
+    %% Apply styles to data components
+    class CACHE_REDIS,CACHE_MEM,CACHE_FILE dataComponent
+    class INDEX_LUCENE,INDEX_ELASTIC,INDEX_VECTOR dataComponent
+    class CFG_PROPS,CFG_YAML,CFG_ENV dataComponent
+    class BB_REST,BB_WEBHOOK,BB_OAUTH dataComponent
+    class AI_OPENAI,AI_AZURE,AI_LOCAL dataComponent
