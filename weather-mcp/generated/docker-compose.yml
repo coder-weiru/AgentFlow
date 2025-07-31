@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  weather-mcp:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+    depends_on:
+      - db
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: weatherdb
+    ports:
+      - "5432:5432"
