@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: https://api.openai.com
+      chat:
+        options:
+          model: gpt-4.1
+      image:
+        options:
+          model: dall-e-3
+          n: 1
+          size: 1024x1024
+
+  # turn on MCP server + annotation scanning :contentReference[oaicite:2]{index=2}
+  mcp:
+    server:
+      enabled: true
+      name: storyboard-mcp
+      version: 1.0.0
+      annotation-scanner:
+        enabled: true
